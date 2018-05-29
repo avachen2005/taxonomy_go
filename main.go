@@ -89,22 +89,6 @@ func main() {
 		log.Fatal("failed to create new schema, err: %v", err)
 	}
 
-	// var queryType = graphql.NewObject(graphql.ObjectConfig{
-	//  Name: "Query",
-	//  Fields: graphql.Fields{
-	//    "latestPost": &graphql.Field{
-	//      Type: graphql.ID,
-	//      Resolve: func(p types.ResolveParams) interface{} {
-	//        return "Hello World!"
-	//      },
-	//    },
-	//  },
-	// })
-
-	// schema, _ := graphql.NewSchema(graphql.SchemaConfig{
-	//  Query: queryType,
-	// })
-
 	h := handler.New(&handler.Config{
 		Schema:   &schema,
 		Pretty:   true,
