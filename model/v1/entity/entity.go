@@ -27,11 +27,13 @@ func (e *Entity) TableName() string {
 func (e *Entity) Create(key string, description string, parentId int64, _type int64, order int64) (err error, id int64) {
 
 	if parentId < 0 {
-		return errors.New("ParentId needs to be greater than 0.")
+		err = errors.New("ParentId needs to be greater than 0.")
+		return
 	}
 
 	if order < 0 {
-		return errors.New("Order needs to be greated than 0.")
+		err = errors.New("Order needs to be greated than 0.")
+		return
 	}
 
 	o := orm.NewOrm()
