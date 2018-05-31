@@ -8,12 +8,12 @@ import (
 )
 
 type Type struct {
-	Id          int64
-	Name        string
-	Description string
-	CreatedAt   int64
-	UpdatedAt   int64
-	DeletedAt   int64
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	CreatedAt   int64  `json:"created_at"`
+	UpdatedAt   int64  `json:"updated_at"`
+	DeletedAt   int64  `json:"deleted_at"`
 }
 
 func (t *Type) TableName() string {

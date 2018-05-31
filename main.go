@@ -4,16 +4,17 @@ import (
 	// "encoding/json"
 	"flag"
 	"fmt"
-	"log"
+	// "log"
 	"net/http"
 	// "time"
 
 	"github.com/avachen2005/taxonomy_go/model/v1/entity"
 	"github.com/avachen2005/taxonomy_go/model/v1/type"
+	"github.com/avachen2005/taxonomy_go/schemas/v1"
 
 	"github.com/BurntSushi/toml"
 	// "github.com/gorilla/websocket"
-	"github.com/graphql-go/graphql"
+	// "github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 
 	"github.com/astaxie/beego/orm"
@@ -63,34 +64,45 @@ func main() {
 		orm.Debug = true
 	}
 
-	// /* graphql */
+	/* graphql
 
 	fields := graphql.Fields{
-		"hello": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world", nil
-			},
-		},
+
+	  "entity": &graphql.Field{
+	    Name: "entity",
+	    Type: graphql.String,
+	    Args: &graphql.FieldConfigArgument{
+	      key: &graphql.ArgumentConfig{
+	        Type:         graphql.String,
+	        DefaultValue: "",
+	        Description:  "Taxonomy key",
+	      },
+	    },
+	    Resolve: func() {
+
+	    },
+	    Description: "taxonomy entity",
+	  },
 	}
 
 	rootQuery := graphql.ObjectConfig{
-		Name:   "RootQuery",
-		Fields: fields,
+	  Name:   "RootQuery",
+	  Fields: fields,
 	}
 
 	schemaConfig := graphql.SchemaConfig{
-		Query: graphql.NewObject(rootQuery),
+	  Query: graphql.NewObject(rootQuery),
 	}
 
 	schema, err := graphql.NewSchema(schemaConfig)
 
 	if err != nil {
-		log.Fatal("failed to create new schema, err: %v", err)
+	  log.Fatal("failed to create new schema, err: %v", err)
 	}
+	*/
 
 	h := handler.New(&handler.Config{
-		Schema:   &schema,
+		Schema:   &schemas.Schema,
 		Pretty:   true,
 		GraphiQL: true,
 	})
