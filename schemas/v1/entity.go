@@ -1,10 +1,8 @@
 package schemas
 
 import (
-	"errors"
-	"log"
-
 	"github.com/avachen2005/taxonomy_go/model/v1/entity"
+	"github.com/avachen2005/taxonomy_go/model/v1/type"
 	"github.com/graphql-go/graphql"
 )
 
@@ -20,153 +18,112 @@ const (
 	FLD_ENTITY_DELETED_AT  = "deleted_at"
 )
 
-var Schema graphql.Schema
+var EntityType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "entity",
+	Description: "",
+	Fields: graphql.Fields{
+		FLD_ENTITY_ID: &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = int(p.Source.(model_v1_entity.Entity).Id)
+				return
+			},
+		},
+		FLD_ENTITY_KEY: &graphql.Field{
+			Type: graphql.String,
+		},
+		FLD_ENTITY_DESCRIPTION: &graphql.Field{
+			Type: graphql.String,
+		},
+		FLD_ENTITY_PARENT_ID: &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = int(p.Source.(model_v1_entity.Entity).ParentId)
+				return
+			},
+		},
+		FLD_ENTITY_TYPE: &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				t := &model_v1_type.Type{}
+				err, res = t.GetById(p.Source.(model_v1_entity.Entity).Type)
+				return
+			},
+		},
+		FLD_ENTITY_ORDER: &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = int(p.Source.(model_v1_entity.Entity).Order)
+				return
+			},
+		},
+		FLD_ENTITY_CREATED_AT: &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = int(p.Source.(model_v1_entity.Entity).CreatedAt)
+				return
+			},
+		},
+		FLD_ENTITY_UPDATED_AT: &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = int(p.Source.(model_v1_entity.Entity).UpdatedAt)
+				return
+			},
+		},
+		FLD_ENTITY_DELETED_AT: &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = int(p.Source.(model_v1_entity.Entity).DeletedAt)
+				return
+			},
+		},
+	},
+})
 
 var entity_id = &graphql.ArgumentConfig{
-	Type:         graphql.Int,
-	DefaultValue: -1,
-	Description:  "Primary key for the entity",
+	Type:        graphql.Int,
+	Description: "Primary key for the entity",
 }
 
 var entity_key = &graphql.ArgumentConfig{
-	Type:         graphql.String,
-	DefaultValue: "",
-	Description:  "Search key field for the entity",
+	Type:        graphql.String,
+	Description: "Search key field for the entity",
 }
 
 var entity_description = &graphql.ArgumentConfig{
-	Type:         graphql.String,
-	DefaultValue: "",
-	Description:  "Description of the key",
+	Type:        graphql.String,
+	Description: "Description of the key",
 }
 
 var entity_parent_id = &graphql.ArgumentConfig{
-	Type:         graphql.Int,
-	DefaultValue: -1,
-	Description:  "Parent id",
+	Type:        graphql.Int,
+	Description: "Parent id",
 }
 
 var entity_type = &graphql.ArgumentConfig{
-	Type:         graphql.Int,
-	DefaultValue: "",
-	Description:  "Type of the entity",
+	Type:        graphql.Int,
+	Description: "Type of the entity",
 }
 
 var entity_order = &graphql.ArgumentConfig{
-	Type:         graphql.Int,
-	DefaultValue: -1,
-	Description:  "order of the type",
+	Type:        graphql.Int,
+	Description: "order of the type",
 }
 
 var entity_updated_at = &graphql.ArgumentConfig{
-	Type:         graphql.Int,
-	DefaultValue: 0,
-	Description:  "last updated date",
+	Type:        graphql.Int,
+	Description: "last updated date",
 }
 
 var entity_deleted_at = &graphql.ArgumentConfig{
-	Type:         graphql.Int,
-	DefaultValue: 0,
-	Description:  "soft delete",
+	Type:        graphql.Int,
+	Description: "soft delete",
 }
 
 var entity_created_at = &graphql.ArgumentConfig{
-	Type:         graphql.Int,
-	DefaultValue: 0,
-	Description:  "created date",
-}
-
-var entity_obj = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: "entity",
-		Fields: graphql.Fields{
-			FLD_ENTITY_ID: &graphql.Field{
-				Type: graphql.Int,
-			},
-			FLD_ENTITY_KEY: &graphql.Field{
-				Type: graphql.String,
-			},
-			FLD_ENTITY_DESCRIPTION: &graphql.Field{
-				Type: graphql.String,
-			},
-			FLD_ENTITY_PARENT_ID: &graphql.Field{
-				Type: graphql.Int,
-			},
-			FLD_ENTITY_TYPE: &graphql.Field{
-				Type: graphql.Int,
-			},
-			FLD_ENTITY_ORDER: &graphql.Field{
-				Type: graphql.Int,
-			},
-			FLD_ENTITY_UPDATED_AT: &graphql.Field{
-				Type: graphql.Int,
-			},
-			FLD_ENTITY_DELETED_AT: &graphql.Field{
-				Type: graphql.Int,
-			},
-			FLD_ENTITY_CREATED_AT: &graphql.Field{
-				Type: graphql.Int,
-			},
-		},
-	})
-
-func init() {
-
-	rootQuery := graphql.ObjectConfig{
-		Name: "rootQuery",
-		Fields: graphql.Fields{
-			"entity": &graphql.Field{
-				Name: "entity",
-				Type: entity_obj,
-				Args: graphql.FieldConfigArgument{
-					FLD_ENTITY_ID:          entity_id,
-					FLD_ENTITY_KEY:         entity_key,
-					FLD_ENTITY_DESCRIPTION: entity_description,
-					FLD_ENTITY_PARENT_ID:   entity_parent_id,
-					FLD_ENTITY_TYPE:        entity_type,
-					FLD_ENTITY_ORDER:       entity_order,
-					FLD_ENTITY_UPDATED_AT:  entity_updated_at,
-					FLD_ENTITY_DELETED_AT:  entity_deleted_at,
-					FLD_ENTITY_CREATED_AT:  entity_created_at,
-				},
-				Resolve:     getEntity,
-				Description: "Taxonomy is build basd on entity of different types",
-			},
-		},
-		Description: "root query",
-	}
-
-	mutationQuery := graphql.ObjectConfig{
-		Name: "RootMutation",
-		Fields: graphql.Fields{
-			"createEntity": &graphql.Field{
-				Name: "entity_mutant",
-				Type: entity_obj,
-				Args: graphql.FieldConfigArgument{
-					FLD_ENTITY_ID:          entity_id,
-					FLD_ENTITY_KEY:         entity_key,
-					FLD_ENTITY_DESCRIPTION: entity_description,
-					FLD_ENTITY_PARENT_ID:   entity_parent_id,
-					FLD_ENTITY_TYPE:        entity_type,
-					FLD_ENTITY_ORDER:       entity_order,
-					FLD_ENTITY_DELETED_AT:  entity_deleted_at,
-				},
-				Resolve:     entityMutation,
-				Description: "Update taxonomy entity",
-			},
-		},
-		Description: "mutant root query",
-	}
-
-	err := errors.New("")
-	Schema, err = graphql.NewSchema(graphql.SchemaConfig{
-		Query:    graphql.NewObject(rootQuery),
-		Mutation: graphql.NewObject(mutationQuery),
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	Type:        graphql.Int,
+	Description: "created date",
 }
 
 func getEntity(params graphql.ResolveParams) (res interface{}, err error) {

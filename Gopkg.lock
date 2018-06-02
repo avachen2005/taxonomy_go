@@ -43,9 +43,21 @@
   revision = "f0393b2c10daeebea900292b8e092e73475399d9"
   version = "v0.2.1"
 
+[[projects]]
+  name = "github.com/kr/pretty"
+  packages = ["."]
+  revision = "73f6ac0b30a98e433b289500d779f50c1a6f0712"
+  version = "v0.1.0"
+
+[[projects]]
+  name = "github.com/kr/text"
+  packages = ["."]
+  revision = "e2ffdb16a802fe2bb95e2e35ff34f0e53aeef34f"
+  version = "v0.1.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c057fc808b46aed1c30f90743e48058eb7d5481c2545b2e460bbbd3c55d2ac79"
+  inputs-digest = "44cc049f98e6049c0a077b497d4be04c64cbb2bdbec20508177ac0cbbc37093d"
   solver-name = "gps-cdcl"
   solver-version = 1

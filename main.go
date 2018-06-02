@@ -36,12 +36,17 @@ type Message struct {
 // var clients = make(map[*websocket.Conn]bool)
 // var broadcast = make(chan Message)
 
+func init() {
+
+}
+
 func main() {
 
 	var db_username = flag.String("u", "root", "database username")
 	var db_password = flag.String("p", "password", "database password")
 	var env = flag.String("e", "dev", "environment key")
 	var version = flag.String("v", "v1", "version")
+	var db_sync = flag.Bool("db", false, "db sync | default to false")
 
 	var conf config
 
@@ -54,9 +59,7 @@ func main() {
 
 	orm.RegisterDriver("mySql", orm.DRMySQL)
 	orm.RegisterDataBase("default", "mysql", db_conn)
-
-	orm.RegisterModel(new(model_v1_entity.Entity))
-	orm.RegisterModel(new(model_v1_type.Type))
+	orm.RegisterModel(new(model_v1_entity.Entity), new(model_v1_type.Type))
 
 	orm.Debug = false
 
@@ -101,14 +104,18 @@ func main() {
 	}
 	*/
 
-	h := handler.New(&handler.Config{
-		Schema:   &schemas.Schema,
-		Pretty:   true,
-		GraphiQL: true,
-	})
+	if *db_sync {
+		orm.RunSyncdb("default", true, true)
+	} else {
+		h := handler.New(&handler.Config{
+			Schema:   &schemas.Schema,
+			Pretty:   true,
+			GraphiQL: true,
+		})
 
-	http.Handle("/graphql", h)
-	http.ListenAndServe(":8080", nil)
+		http.Handle("/graphql", h)
+		http.ListenAndServe(":8080", nil)
+	}
 
 	/* websocket
 

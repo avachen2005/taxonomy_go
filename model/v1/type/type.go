@@ -1,6 +1,7 @@
 package model_v1_type
 
 import (
+	// "fmt"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -20,49 +21,67 @@ func (t *Type) TableName() string {
 	return "types"
 }
 
-func (t *Type) Create(name string, description string) (err error) {
-
-	o := orm.NewOrm()
-
-	newType := &Type{
-		Name:        name,
-		Description: description,
-		UpdatedAt:   time.Now().Unix(),
-		CreatedAt:   time.Now().Unix(),
+func (t *Type) TableUnique() [][]string {
+	return [][]string{
+		{"name"},
 	}
-
-	o.Insert(&newType)
-
-	return
 }
 
-func (t *Type) ReadList(start int, count int, asc bool) (err error, num int64, list []Type) {
+func (t *Type) CreateOrUpdate(stringFilter map[string]string, intFilter map[string]int64) (err error, num int64) {
 
 	o := orm.NewOrm()
-	qs := o.QueryTable(t.TableName()).Limit(count, start)
+	newType := &Type{}
+	for k, v := range stringFilter {
+		switch k {
+		case "name":
+			newType.Name = v
+		case "description":
+			newType.Description = v
+		}
+	}
 
-	if asc {
-		qs = qs.OrderBy("id")
+	if _, ok := intFilter["deleted_at"]; ok {
+		newType.DeletedAt = time.Now().Unix()
+	}
+
+	newType.UpdatedAt = time.Now().Unix()
+
+	if v, ok := intFilter["id"]; ok {
+		newType.Id = v
+		newType.UpdatedAt = time.Now().Unix()
+		_, err = o.Update(newType)
+		num = v
 	} else {
-		qs = qs.OrderBy("-id")
+		newType.CreatedAt = time.Now().Unix()
+		num, err = o.Insert(newType)
 	}
 
-	num, err = qs.All(list)
-
 	return
 }
 
-func (t *Type) Update(id int64) (err error) {
-
-	return
-}
-
-func (t *Type) DeleteById(id int64) (err error, num int64) {
+func (t *Type) GetList(stringFilter map[string]string, intFilter map[string]int64) (err error, num int64, list []Type) {
 
 	o := orm.NewOrm()
-	qs := o.QueryTable(t.TableName()).Filter("id", id)
+	qs := o.QueryTable(t.TableName())
 
-	num, err = qs.Delete()
+	for k, v := range stringFilter {
+		qs = qs.Filter(k, v)
+	}
+
+	for k, v := range intFilter {
+		qs = qs.Filter(k, v)
+	}
+
+	num, err = qs.All(&list)
+
+	return
+}
+
+func (t *Type) GetById(id int64) (err error, newType Type) {
+
+	o := orm.NewOrm()
+	newType.Id = id
+	err = o.Read(&newType)
 
 	return
 }

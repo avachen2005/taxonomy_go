@@ -12,7 +12,7 @@ type Entity struct {
 	Key         string `json:"key"`
 	Description string `json:"description"`
 	ParentId    int64  `json:"parent_id"`
-	Type        int64  `json:"type"`
+	Type        int64  `json:"nature"`
 	Order       int64  `json:"order"`
 	CreatedAt   int64  `json:"created_at"`
 	UpdatedAt   int64  `json:"updated_at"`
