@@ -7,7 +7,7 @@ import (
 	"github.com/graphql-go/graphql"
 
 	"fmt"
-	// "github.com/kr/pretty"
+	"github.com/kr/pretty"
 )
 
 const (
@@ -25,24 +25,42 @@ var TypeType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		FLD_TYPE_ID: &graphql.Field{
 			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = p.Source.(model_v1_type.Type).Id
+				return
+			},
 		},
 		FLD_TYPE_NAME: &graphql.Field{
 			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = p.Source.(model_v1_type.Type).Name
+				return
+			},
 		},
 		FLD_TYPE_DESCRIPTION: &graphql.Field{
 			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = p.Source.(model_v1_type.Type).Description
+				return
+			},
 		},
-		FLD_TYPE_CREATED_AT: &graphql.Field{
-			Type: graphql.Int,
+		FLD_PAGE_INFO: &graphql.Field{
+			Type: PaginationType,
+			// Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+			//  return
+			// },
 		},
 		FLD_TYPE_UPDATED_AT: &graphql.Field{
 			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = p.Source.(model_v1_type.Type).UpdatedAt
+				return
+			},
 		},
 		FLD_TYPE_DELETED_AT: &graphql.Field{
 			Type: graphql.Boolean,
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
 
-				fmt.Println(1)
 				if p.Source.(model_v1_type.Type).DeletedAt != 0 {
 					res = true
 				}
@@ -106,13 +124,12 @@ func getTypes(p graphql.ResolveParams) (res interface{}, err error) {
 	t := model_v1_type.Type{}
 
 	err, _, res = t.GetList(stringFilter, intFilter, per_page, page*per_page)
-	fmt.Println(1)
+
+	fmt.Printf("#% v\n", pretty.Formatter(res))
 	return
 }
 
 func typeMutation(p graphql.ResolveParams) (res interface{}, err error) {
-
-	// fmt.Printf("%# v\n", pretty.Formatter(p.Args))
 
 	stringFilter := map[string]string{}
 	intFilter := map[string]int64{}
@@ -136,7 +153,6 @@ func typeMutation(p graphql.ResolveParams) (res interface{}, err error) {
 		}
 	}
 
-	// fmt.Printf("%# v\n", pretty.Formatter(intFilter))
 	err, id := newType.CreateOrUpdate(stringFilter, intFilter)
 
 	if err != nil {

@@ -1,6 +1,9 @@
 package schemas
 
 import (
+	// "fmt"
+	// "github.com/kr/pretty"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -36,6 +39,14 @@ var Schema, Err = graphql.NewSchema(graphql.SchemaConfig{
 				},
 				Resolve:     getTypes,
 				Description: "Type of entity",
+			},
+			"total": &graphql.Field{
+				Type:        TotalType,
+				Description: "total",
+				Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+					res = 100
+					return
+				},
 			},
 		},
 	}),

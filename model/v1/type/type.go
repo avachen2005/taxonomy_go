@@ -1,7 +1,7 @@
 package model_v1_type
 
 import (
-	"fmt"
+	// "fmt"
 
 	"time"
 
@@ -63,9 +63,6 @@ func (t *Type) CreateOrUpdate(stringFilter map[string]string, intFilter map[stri
 
 func (t *Type) GetList(stringFilter map[string]string, intFilter map[string]int64, limit int64, offset int64) (err error, num int64, list []Type) {
 
-	fmt.Println(limit)
-	fmt.Println(offset)
-
 	o := orm.NewOrm()
 	qs := o.QueryTable(t.TableName())
 
@@ -88,5 +85,12 @@ func (t *Type) GetById(id int64) (err error, newType Type) {
 	newType.Id = id
 	err = o.Read(&newType)
 
+	return
+}
+
+func (t *Type) GetTotal() (err error, total int64) {
+
+	o := orm.NewOrm()
+	total, err = o.QueryTable(t.TableName()).Count()
 	return
 }
