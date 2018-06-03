@@ -2,7 +2,7 @@ package schemas
 
 import (
 	"github.com/avachen2005/taxonomy_go/model/v1/entity"
-	"github.com/avachen2005/taxonomy_go/model/v1/type"
+	"github.com/avachen2005/taxonomy_go/model/v1/nature"
 	"github.com/graphql-go/graphql"
 )
 
@@ -11,7 +11,7 @@ const (
 	FLD_ENTITY_KEY         = "key"
 	FLD_ENTITY_DESCRIPTION = "description"
 	FLD_ENTITY_PARENT_ID   = "parent_id"
-	FLD_ENTITY_TYPE        = "type"
+	FLD_ENTITY_NATURE      = "nature"
 	FLD_ENTITY_ORDER       = "order"
 	FLD_ENTITY_CREATED_AT  = "created_at"
 	FLD_ENTITY_UPDATED_AT  = "updated_at"
@@ -38,12 +38,12 @@ var EntityType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Int,
 			Description: "",
 		},
-		FLD_ENTITY_TYPE: &graphql.Field{
+		FLD_ENTITY_NATURE: &graphql.Field{
 			Type:        graphql.String,
 			Description: "",
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				t := &model_v1_type.Type{}
-				err, res = t.GetById(p.Source.(model_v1_entity.Entity).Type)
+				t := &model_v1_nature.Nature{}
+				err, res = t.GetById(p.Source.(model_v1_entity.Entity).Nature)
 				return
 			},
 		},
@@ -150,8 +150,8 @@ func getEntity(params graphql.ResolveParams) (res interface{}, err error) {
 		intFilter[FLD_ENTITY_PARENT_ID] = int64(val.(int))
 	}
 
-	if val, ok := params.Args[FLD_ENTITY_TYPE]; ok {
-		stringFilter[FLD_ENTITY_TYPE] = val.(string)
+	if val, ok := params.Args[FLD_ENTITY_NATURE]; ok {
+		stringFilter[FLD_ENTITY_NATURE] = val.(string)
 	}
 
 	if val, ok := params.Args[FLD_ENTITY_CREATED_AT]; ok && int64(val.(int)) > 0 {
@@ -207,7 +207,7 @@ func updateEntity(params graphql.ResolveParams) (res interface{}, err error) {
 
 			stringFilters[k] = v.(string)
 
-		case FLD_ENTITY_TYPE:
+		case FLD_ENTITY_NATURE:
 
 		}
 	}
@@ -240,7 +240,7 @@ func createEntity(params graphql.ResolveParams) (res interface{}, err error) {
 
 			stringFilters[k] = v.(string)
 
-		case FLD_ENTITY_TYPE:
+		case FLD_ENTITY_NATURE:
 
 		}
 	}

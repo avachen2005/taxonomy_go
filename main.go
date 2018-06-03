@@ -9,7 +9,7 @@ import (
 	// "time"
 
 	"github.com/avachen2005/taxonomy_go/model/v1/entity"
-	"github.com/avachen2005/taxonomy_go/model/v1/type"
+	"github.com/avachen2005/taxonomy_go/model/v1/nature"
 	"github.com/avachen2005/taxonomy_go/schemas/v1"
 
 	"github.com/BurntSushi/toml"
@@ -59,7 +59,7 @@ func main() {
 
 	orm.RegisterDriver("mySql", orm.DRMySQL)
 	orm.RegisterDataBase("default", "mysql", db_conn)
-	orm.RegisterModel(new(model_v1_entity.Entity), new(model_v1_type.Type))
+	orm.RegisterModel(new(model_v1_entity.Entity), new(model_v1_nature.Nature))
 
 	orm.Debug = false
 

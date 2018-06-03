@@ -18,7 +18,7 @@ var Schema, Err = graphql.NewSchema(graphql.SchemaConfig{
 					FLD_ENTITY_KEY:         entity_key,
 					FLD_ENTITY_DESCRIPTION: entity_description,
 					FLD_ENTITY_PARENT_ID:   entity_parent_id,
-					FLD_ENTITY_TYPE:        entity_type,
+					FLD_ENTITY_NATURE:      entity_type,
 					FLD_ENTITY_ORDER:       entity_order,
 					FLD_ENTITY_UPDATED_AT:  entity_updated_at,
 					FLD_ENTITY_DELETED_AT:  entity_deleted_at,
@@ -27,8 +27,8 @@ var Schema, Err = graphql.NewSchema(graphql.SchemaConfig{
 				Resolve:     getEntity,
 				Description: "Taxonomy is build basd on entity of different types",
 			},
-			"types": &graphql.Field{
-				Type: graphql.NewList(TypeType),
+			"nature": &graphql.Field{
+				Type: graphql.NewList(NatureType),
 				Args: graphql.FieldConfigArgument{
 					FLD_TYPE_ID:          arg_type_id,
 					FLD_TYPE_NAME:        arg_type_name,
@@ -37,11 +37,11 @@ var Schema, Err = graphql.NewSchema(graphql.SchemaConfig{
 					FLD_PAGE:             arg_page,
 					FLD_PER_PAGE:         arg_per_page,
 				},
-				Resolve:     getTypes,
+				Resolve:     getNatures,
 				Description: "Type of entity",
 			},
 			"total": &graphql.Field{
-				Type:        TotalType,
+				Type:        NatureTotal,
 				Description: "total",
 				Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
 					res = 100
@@ -60,15 +60,15 @@ var Schema, Err = graphql.NewSchema(graphql.SchemaConfig{
 					FLD_ENTITY_KEY:         entity_key,
 					FLD_ENTITY_DESCRIPTION: entity_description,
 					FLD_ENTITY_PARENT_ID:   entity_parent_id,
-					FLD_ENTITY_TYPE:        entity_type,
+					FLD_ENTITY_NATURE:      entity_type,
 					FLD_ENTITY_ORDER:       entity_order,
 					FLD_ENTITY_DELETED_AT:  entity_deleted_at,
 				},
 				Resolve:     entityMutation,
 				Description: "Update taxonomy entity",
 			},
-			"type": &graphql.Field{
-				Type: TypeType,
+			"nature": &graphql.Field{
+				Type: NatureType,
 				Args: graphql.FieldConfigArgument{
 					FLD_TYPE_ID:          arg_type_id,
 					FLD_TYPE_NAME:        arg_type_name,

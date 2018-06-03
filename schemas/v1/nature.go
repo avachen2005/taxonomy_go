@@ -3,7 +3,7 @@ package schemas
 import (
 	"time"
 
-	"github.com/avachen2005/taxonomy_go/model/v1/type"
+	"github.com/avachen2005/taxonomy_go/model/v1/nature"
 	"github.com/graphql-go/graphql"
 
 	"fmt"
@@ -17,43 +17,65 @@ const (
 	FLD_TYPE_CREATED_AT  = "created_at"
 	FLD_TYPE_UPDATED_AT  = "updated_at"
 	FLD_TYPE_DELETED_AT  = "deleted"
+	FLD_TYPE_CURSOR      = "cursor"
 )
 
-var TypeType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "type",
+type Nature struct {
+	Id          int         `json:"id"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	CreatedAt   int         `json:"created_at"`
+	UpdatedAt   int         `json:"updated_at"`
+	DeletedAt   int         `json:"deleted_at"`
+	PageInfo    *Pagination `json: "page_info"`
+}
+
+var NatureType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "nature",
 	Description: "",
 	Fields: graphql.Fields{
 		FLD_TYPE_ID: &graphql.Field{
 			Type: graphql.Int,
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = p.Source.(model_v1_type.Type).Id
+				res = p.Source.(Nature).Id
 				return
 			},
 		},
 		FLD_TYPE_NAME: &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = p.Source.(model_v1_type.Type).Name
+				res = p.Source.(Nature).Name
 				return
 			},
 		},
 		FLD_TYPE_DESCRIPTION: &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = p.Source.(model_v1_type.Type).Description
+				res = p.Source.(Nature).Description
 				return
 			},
 		},
 		FLD_PAGE_INFO: &graphql.Field{
 			Type: PaginationType,
-			// Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-			//  return
-			// },
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+
+				fmt.Println("== PaginationType ==")
+				fmt.Printf("%#v\n", pretty.Formatter(p.Source))
+				res = p.Source.(Nature).PageInfo
+				return
+			},
 		},
 		FLD_TYPE_UPDATED_AT: &graphql.Field{
 			Type: graphql.Int,
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = p.Source.(model_v1_type.Type).UpdatedAt
+				res = p.Source.(Nature).UpdatedAt
+				return
+			},
+		},
+		FLD_TYPE_CREATED_AT: &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				res = p.Source.(Nature).CreatedAt
 				return
 			},
 		},
@@ -61,7 +83,7 @@ var TypeType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.Boolean,
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
 
-				if p.Source.(model_v1_type.Type).DeletedAt != 0 {
+				if p.Source.(Nature).DeletedAt != 0 {
 					res = true
 				}
 
@@ -89,7 +111,10 @@ var arg_type_deleted_at = &graphql.ArgumentConfig{
 	Type: graphql.Int,
 }
 
-func getTypes(p graphql.ResolveParams) (res interface{}, err error) {
+func getNatures(p graphql.ResolveParams) (res interface{}, err error) {
+
+	newList := []Nature{}
+	t := model_v1_nature.Nature{}
 
 	stringFilter := map[string]string{}
 	intFilter := map[string]int64{}
@@ -121,11 +146,26 @@ func getTypes(p graphql.ResolveParams) (res interface{}, err error) {
 		per_page = int64(v.(int))
 	}
 
-	t := model_v1_type.Type{}
+	err, _, list := t.GetList(stringFilter, intFilter, per_page, page*per_page)
 
-	err, _, res = t.GetList(stringFilter, intFilter, per_page, page*per_page)
+	for i, e := range list {
+		newList = append(newList, Nature{
+			Id:          int(e.Id),
+			Name:        e.Name,
+			Description: e.Description,
+			CreatedAt:   int(e.CreatedAt),
+			DeletedAt:   int(e.DeletedAt),
+			UpdatedAt:   int(e.UpdatedAt),
+			PageInfo: &Pagination{
+				Page:    int(page),
+				PerPage: int(per_page),
+				Cursor:  i,
+			},
+		})
+	}
 
-	fmt.Printf("#% v\n", pretty.Formatter(res))
+	res = newList
+
 	return
 }
 
@@ -133,7 +173,7 @@ func typeMutation(p graphql.ResolveParams) (res interface{}, err error) {
 
 	stringFilter := map[string]string{}
 	intFilter := map[string]int64{}
-	newType := &model_v1_type.Type{}
+	newType := &model_v1_nature.Nature{}
 
 	for k, v := range p.Args {
 

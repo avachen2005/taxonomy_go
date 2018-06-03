@@ -1,4 +1,4 @@
-package model_v1_type
+package model_v1_nature
 
 import (
 	// "fmt"
@@ -9,7 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type Type struct {
+type Nature struct {
 	Id          int64  `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -18,20 +18,20 @@ type Type struct {
 	DeletedAt   int64  `json:"deleted_at"`
 }
 
-func (t *Type) TableName() string {
-	return "types"
+func (t *Nature) TableName() string {
+	return "natures"
 }
 
-func (t *Type) TableUnique() [][]string {
+func (t *Nature) TableUnique() [][]string {
 	return [][]string{
 		{"name"},
 	}
 }
 
-func (t *Type) CreateOrUpdate(stringFilter map[string]string, intFilter map[string]int64) (err error, num int64) {
+func (t *Nature) CreateOrUpdate(stringFilter map[string]string, intFilter map[string]int64) (err error, num int64) {
 
 	o := orm.NewOrm()
-	newType := &Type{
+	newType := &Nature{
 		UpdatedAt: time.Now().Unix(),
 	}
 
@@ -61,7 +61,7 @@ func (t *Type) CreateOrUpdate(stringFilter map[string]string, intFilter map[stri
 	return
 }
 
-func (t *Type) GetList(stringFilter map[string]string, intFilter map[string]int64, limit int64, offset int64) (err error, num int64, list []Type) {
+func (t *Nature) GetList(stringFilter map[string]string, intFilter map[string]int64, limit int64, offset int64) (err error, num int64, list []Nature) {
 
 	o := orm.NewOrm()
 	qs := o.QueryTable(t.TableName())
@@ -79,16 +79,16 @@ func (t *Type) GetList(stringFilter map[string]string, intFilter map[string]int6
 	return
 }
 
-func (t *Type) GetById(id int64) (err error, newType Type) {
+func (t *Nature) GetById(id int64) (err error, newNature Nature) {
 
 	o := orm.NewOrm()
-	newType.Id = id
-	err = o.Read(&newType)
+	newNature.Id = id
+	err = o.Read(&newNature)
 
 	return
 }
 
-func (t *Type) GetTotal() (err error, total int64) {
+func (t *Nature) GetTotal() (err error, total int64) {
 
 	o := orm.NewOrm()
 	total, err = o.QueryTable(t.TableName()).Count()

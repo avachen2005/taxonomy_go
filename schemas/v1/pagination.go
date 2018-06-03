@@ -2,7 +2,7 @@ package schemas
 
 import (
 	// "github.com/avachen2005/taxonomy_go/model/v1/entity"
-	"github.com/avachen2005/taxonomy_go/model/v1/type"
+	"github.com/avachen2005/taxonomy_go/model/v1/nature"
 	"github.com/graphql-go/graphql"
 
 	"fmt"
@@ -22,6 +22,12 @@ const (
 	default_per_page = 25
 )
 
+type Pagination struct {
+	Page    int `json:"page"`
+	PerPage int `json:"per_page"`
+	Cursor  int `json:"cursor"`
+}
+
 var arg_page = &graphql.ArgumentConfig{
 	Type: graphql.Int,
 }
@@ -37,25 +43,31 @@ var PaginationType = graphql.NewObject(graphql.ObjectConfig{
 		FLD_PER_PAGE: &graphql.Field{
 			Type: graphql.Int,
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				if v, ok := p.Args[FLD_PER_PAGE]; ok {
-					res = v
-				}
+
+				res = p.Source.(*Pagination).PerPage
 				return
 			},
 		},
 		FLD_PAGE: &graphql.Field{
 			Type: graphql.Int,
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				if v, ok := p.Args[FLD_PAGE]; ok {
-					res = v
-				}
+
+				res = p.Source.(*Pagination).Page
+				return
+			},
+		},
+		FLD_CURSOR: &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+
+				res = p.Source.(*Pagination).Cursor
 				return
 			},
 		},
 	},
 })
 
-var TotalType = graphql.NewObject(graphql.ObjectConfig{
+var NatureTotal = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "total",
 	Description: "total",
 	Fields: graphql.Fields{
@@ -66,12 +78,12 @@ var TotalType = graphql.NewObject(graphql.ObjectConfig{
 				return
 			},
 		},
-		"type": &graphql.Field{
+		"nature": &graphql.Field{
 			Type: graphql.Int,
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
 
 				fmt.Println(p.Args)
-				t := &model_v1_type.Type{}
+				t := &model_v1_nature.Nature{}
 
 				err, total := t.GetTotal()
 

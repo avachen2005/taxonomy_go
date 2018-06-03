@@ -12,7 +12,7 @@ type Entity struct {
 	Key         string `json:"key"`
 	Description string `json:"description"`
 	ParentId    int64  `json:"parent_id"`
-	Type        int64  `json:"nature"`
+	Nature      int64  `json:"nature"`
 	Order       int64  `json:"order"`
 	CreatedAt   int64  `json:"created_at"`
 	UpdatedAt   int64  `json:"updated_at"`
@@ -42,7 +42,7 @@ func (e *Entity) Create(stringFilters map[string]string, intFilters map[string]i
 		case "parent_id":
 			newEntity.ParentId = v
 		case "type":
-			newEntity.Type = v
+			newEntity.Nature = v
 		case "order":
 			newEntity.Order = v
 		}
@@ -88,7 +88,7 @@ func (e *Entity) UpdateById(stringFilters map[string]string, intFilters map[stri
 		case "deleted_at":
 			foundEntity.DeletedAt = v
 		case "type":
-			foundEntity.Type = v
+			foundEntity.Nature = v
 		}
 	}
 
