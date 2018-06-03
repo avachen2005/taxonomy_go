@@ -158,6 +158,10 @@ func (e *Entity) Search(stringFilters map[string]string, intFiltfers map[string]
 		qs = qs.Filter(k, v)
 	}
 
+	for k, v := range intFiltfers {
+		qs = qs.Filter(k, v)
+	}
+
 	num, err = qs.All(&list)
 
 	return

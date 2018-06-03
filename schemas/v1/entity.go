@@ -15,7 +15,7 @@ const (
 	FLD_ENTITY_ORDER       = "order"
 	FLD_ENTITY_CREATED_AT  = "created_at"
 	FLD_ENTITY_UPDATED_AT  = "updated_at"
-	FLD_ENTITY_DELETED_AT  = "deleted_at"
+	FLD_ENTITY_DELETED_AT  = "deleted"
 )
 
 var EntityType = graphql.NewObject(graphql.ObjectConfig{
@@ -23,27 +23,24 @@ var EntityType = graphql.NewObject(graphql.ObjectConfig{
 	Description: "",
 	Fields: graphql.Fields{
 		FLD_ENTITY_ID: &graphql.Field{
-			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = int(p.Source.(model_v1_entity.Entity).Id)
-				return
-			},
+			Type:        graphql.Int,
+			Description: "",
 		},
 		FLD_ENTITY_KEY: &graphql.Field{
-			Type: graphql.String,
+			Type:        graphql.String,
+			Description: "",
 		},
 		FLD_ENTITY_DESCRIPTION: &graphql.Field{
-			Type: graphql.String,
+			Type:        graphql.String,
+			Description: "",
 		},
 		FLD_ENTITY_PARENT_ID: &graphql.Field{
-			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = int(p.Source.(model_v1_entity.Entity).ParentId)
-				return
-			},
+			Type:        graphql.Int,
+			Description: "",
 		},
 		FLD_ENTITY_TYPE: &graphql.Field{
-			Type: graphql.String,
+			Type:        graphql.String,
+			Description: "",
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
 				t := &model_v1_type.Type{}
 				err, res = t.GetById(p.Source.(model_v1_entity.Entity).Type)
@@ -51,30 +48,28 @@ var EntityType = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		FLD_ENTITY_ORDER: &graphql.Field{
-			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = int(p.Source.(model_v1_entity.Entity).Order)
-				return
-			},
+			Type:        graphql.Int,
+			Description: "",
 		},
 		FLD_ENTITY_CREATED_AT: &graphql.Field{
-			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = int(p.Source.(model_v1_entity.Entity).CreatedAt)
-				return
-			},
+			Type:        graphql.Int,
+			Description: "",
 		},
 		FLD_ENTITY_UPDATED_AT: &graphql.Field{
-			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = int(p.Source.(model_v1_entity.Entity).UpdatedAt)
-				return
-			},
+			Type:        graphql.Int,
+			Description: "",
 		},
 		FLD_ENTITY_DELETED_AT: &graphql.Field{
-			Type: graphql.Int,
+			Type:        graphql.Boolean,
+			Description: "",
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = int(p.Source.(model_v1_entity.Entity).DeletedAt)
+
+				if p.Source.(model_v1_entity.Entity).DeletedAt != 0 {
+					res = true
+				}
+
+				res = false
+
 				return
 			},
 		},

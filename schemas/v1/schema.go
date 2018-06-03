@@ -8,7 +8,7 @@ var Schema, Err = graphql.NewSchema(graphql.SchemaConfig{
 	Query: graphql.NewObject(graphql.ObjectConfig{
 		Name: "RootQuery",
 		Fields: graphql.Fields{
-			"entity": &graphql.Field{
+			"entities": &graphql.Field{
 				Type: EntityType,
 				Args: graphql.FieldConfigArgument{
 					FLD_ENTITY_ID:          entity_id,
@@ -24,14 +24,17 @@ var Schema, Err = graphql.NewSchema(graphql.SchemaConfig{
 				Resolve:     getEntity,
 				Description: "Taxonomy is build basd on entity of different types",
 			},
-			"type": &graphql.Field{
-				Type: TypeType,
+			"types": &graphql.Field{
+				Type: graphql.NewList(TypeType),
 				Args: graphql.FieldConfigArgument{
 					FLD_TYPE_ID:          arg_type_id,
 					FLD_TYPE_NAME:        arg_type_name,
 					FLD_TYPE_DESCRIPTION: arg_type_description,
+					FLD_TYPE_DELETED_AT:  arg_type_deleted_at,
+					FLD_PAGE:             arg_page,
+					FLD_PER_PAGE:         arg_per_page,
 				},
-				Resolve:     getType,
+				Resolve:     getTypes,
 				Description: "Type of entity",
 			},
 		},

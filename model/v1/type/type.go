@@ -1,7 +1,8 @@
 package model_v1_type
 
 import (
-	// "fmt"
+	"fmt"
+
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -30,7 +31,10 @@ func (t *Type) TableUnique() [][]string {
 func (t *Type) CreateOrUpdate(stringFilter map[string]string, intFilter map[string]int64) (err error, num int64) {
 
 	o := orm.NewOrm()
-	newType := &Type{}
+	newType := &Type{
+		UpdatedAt: time.Now().Unix(),
+	}
+
 	for k, v := range stringFilter {
 		switch k {
 		case "name":
@@ -43,8 +47,6 @@ func (t *Type) CreateOrUpdate(stringFilter map[string]string, intFilter map[stri
 	if _, ok := intFilter["deleted_at"]; ok {
 		newType.DeletedAt = time.Now().Unix()
 	}
-
-	newType.UpdatedAt = time.Now().Unix()
 
 	if v, ok := intFilter["id"]; ok {
 		newType.Id = v
@@ -59,7 +61,10 @@ func (t *Type) CreateOrUpdate(stringFilter map[string]string, intFilter map[stri
 	return
 }
 
-func (t *Type) GetList(stringFilter map[string]string, intFilter map[string]int64) (err error, num int64, list []Type) {
+func (t *Type) GetList(stringFilter map[string]string, intFilter map[string]int64, limit int64, offset int64) (err error, num int64, list []Type) {
+
+	fmt.Println(limit)
+	fmt.Println(offset)
 
 	o := orm.NewOrm()
 	qs := o.QueryTable(t.TableName())
@@ -72,7 +77,7 @@ func (t *Type) GetList(stringFilter map[string]string, intFilter map[string]int6
 		qs = qs.Filter(k, v)
 	}
 
-	num, err = qs.All(&list)
+	num, err = qs.Limit(limit, offset).All(&list)
 
 	return
 }

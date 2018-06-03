@@ -5,7 +5,8 @@ import (
 
 	"github.com/avachen2005/taxonomy_go/model/v1/type"
 	"github.com/graphql-go/graphql"
-	// "fmt"
+
+	"fmt"
 	// "github.com/kr/pretty"
 )
 
@@ -15,7 +16,7 @@ const (
 	FLD_TYPE_DESCRIPTION = "description"
 	FLD_TYPE_CREATED_AT  = "created_at"
 	FLD_TYPE_UPDATED_AT  = "updated_at"
-	FLD_TYPE_DELETED_AT  = "deleted_at"
+	FLD_TYPE_DELETED_AT  = "deleted"
 )
 
 var TypeType = graphql.NewObject(graphql.ObjectConfig{
@@ -24,10 +25,6 @@ var TypeType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		FLD_TYPE_ID: &graphql.Field{
 			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = int(p.Source.(model_v1_type.Type).Id)
-				return
-			},
 		},
 		FLD_TYPE_NAME: &graphql.Field{
 			Type: graphql.String,
@@ -37,22 +34,21 @@ var TypeType = graphql.NewObject(graphql.ObjectConfig{
 		},
 		FLD_TYPE_CREATED_AT: &graphql.Field{
 			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = int(p.Source.(model_v1_type.Type).CreatedAt)
-				return
-			},
 		},
 		FLD_TYPE_UPDATED_AT: &graphql.Field{
 			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = int(p.Source.(model_v1_type.Type).UpdatedAt)
-				return
-			},
 		},
 		FLD_TYPE_DELETED_AT: &graphql.Field{
-			Type: graphql.Int,
+			Type: graphql.Boolean,
 			Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
-				res = int(p.Source.(model_v1_type.Type).DeletedAt)
+
+				fmt.Println(1)
+				if p.Source.(model_v1_type.Type).DeletedAt != 0 {
+					res = true
+				}
+
+				res = false
+
 				return
 			},
 		},
@@ -75,7 +71,7 @@ var arg_type_deleted_at = &graphql.ArgumentConfig{
 	Type: graphql.Int,
 }
 
-func getType(p graphql.ResolveParams) (res interface{}, err error) {
+func getTypes(p graphql.ResolveParams) (res interface{}, err error) {
 
 	stringFilter := map[string]string{}
 	intFilter := map[string]int64{}
@@ -92,10 +88,25 @@ func getType(p graphql.ResolveParams) (res interface{}, err error) {
 		}
 	}
 
+	page := int64(default_page)
+	if v, ok := p.Args[FLD_PAGE]; ok {
+		page = int64(v.(int))
+
+	}
+
+	if page > 0 {
+		page = page - 1
+	}
+
+	per_page := int64(default_per_page)
+	if v, ok := p.Args[FLD_PER_PAGE]; ok {
+		per_page = int64(v.(int))
+	}
+
 	t := model_v1_type.Type{}
 
-	err, _, res = t.GetList(stringFilter, intFilter)
-
+	err, _, res = t.GetList(stringFilter, intFilter, per_page, page*per_page)
+	fmt.Println(1)
 	return
 }
 
