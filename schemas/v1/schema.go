@@ -23,6 +23,8 @@ var Schema, Err = graphql.NewSchema(graphql.SchemaConfig{
 					FLD_ENTITY_UPDATED_AT:  entity_updated_at,
 					FLD_ENTITY_DELETED_AT:  entity_deleted_at,
 					FLD_ENTITY_CREATED_AT:  entity_created_at,
+					FLD_PAGE:               arg_page,
+					FLD_PER_PAGE:           arg_per_page,
 				},
 				Resolve:     getEntity,
 				Description: "Taxonomy is build basd on entity of different types",

@@ -149,7 +149,7 @@ func (e *Entity) GetAll(offset int, limit int, asc bool) (err error, num int64, 
 	return
 }
 
-func (e *Entity) Search(stringFilters map[string]string, intFiltfers map[string]int64) (err error, num int64, list []Entity) {
+func (e *Entity) Search(stringFilters map[string]string, intFiltfers map[string]int64, limit int64, offset int64) (err error, num int64, list []Entity) {
 
 	o := orm.NewOrm()
 	qs := o.QueryTable(e.TableName())
@@ -162,7 +162,7 @@ func (e *Entity) Search(stringFilters map[string]string, intFiltfers map[string]
 		qs = qs.Filter(k, v)
 	}
 
-	num, err = qs.All(&list)
+	num, err = qs.Limit(limit, offset).All(&list)
 
 	return
 }

@@ -18,6 +18,19 @@ const (
 	FLD_ENTITY_DELETED_AT  = "deleted"
 )
 
+type Entity struct {
+	Id          int         `json:"id"`
+	Key         string      `json:"key"`
+	Description string      `json:"description"`
+	ParentId    int         `json:"parent_id"`
+	Nature      int         `json:"nature"`
+	Order       int         `json:"order"`
+	CreatedAt   int         `json:"created_at"`
+	UpdatedAt   int         `json:"updated_at"`
+	DeletedAt   int         `json:"deleted_at"`
+	PageInfo    *Pagination `json: "page_info"`
+}
+
 var EntityType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "entity",
 	Description: "",
@@ -121,53 +134,62 @@ var entity_created_at = &graphql.ArgumentConfig{
 	Description: "created date",
 }
 
-func getEntity(params graphql.ResolveParams) (res interface{}, err error) {
+func getEntity(p graphql.ResolveParams) (res interface{}, err error) {
 
 	entity := &model_v1_entity.Entity{}
-
-	if len(params.Args) == 0 {
-
-		err, _, res = entity.GetAll(25, 1, true)
-		return
-	}
+	newList := []Entity{}
 
 	stringFilter := map[string]string{}
 	intFilter := map[string]int64{}
 
-	if val, ok := params.Args[FLD_ENTITY_ID]; ok {
-		intFilter[FLD_ENTITY_ID] = int64(val.(int))
+	page := int64(default_page)
+	if v, ok := p.Args[FLD_PAGE]; ok {
+		page = int64(v.(int))
+
 	}
 
-	if val, ok := params.Args[FLD_ENTITY_KEY]; ok {
-		stringFilter[FLD_ENTITY_KEY] = val.(string)
+	if page > 0 {
+		page = page - 1
 	}
 
-	if val, ok := params.Args[FLD_ENTITY_DESCRIPTION]; ok {
-		stringFilter[FLD_ENTITY_DESCRIPTION] = val.(string)
+	per_page := int64(default_per_page)
+	if v, ok := p.Args[FLD_PER_PAGE]; ok {
+		per_page = int64(v.(int))
 	}
 
-	if val, ok := params.Args[FLD_ENTITY_PARENT_ID]; ok && int64(val.(int)) > 0 {
-		intFilter[FLD_ENTITY_PARENT_ID] = int64(val.(int))
+	for k, v := range p.Args {
+
+		switch k {
+		case FLD_ENTITY_ID, FLD_ENTITY_PARENT_ID, FLD_ENTITY_NATURE, FLD_ENTITY_CREATED_AT, FLD_ENTITY_UPDATED_AT:
+			intFilter[k] = int64(v.(int))
+		case FLD_ENTITY_KEY, FLD_ENTITY_DESCRIPTION:
+			stringFilter[k] = v.(string)
+
+		}
 	}
 
-	if val, ok := params.Args[FLD_ENTITY_NATURE]; ok {
-		stringFilter[FLD_ENTITY_NATURE] = val.(string)
+	err, _, list := entity.Search(stringFilter, intFilter, per_page, page*per_page)
+
+	for i, e := range list {
+		newList = append(newList, Entity{
+			Id:          int(e.Id),
+			Key:         e.Key,
+			Description: e.Description,
+			ParentId:    int(e.ParentId),
+			Nature:      int(e.Nature),
+			Order:       int(e.Order),
+			CreatedAt:   int(e.CreatedAt),
+			UpdatedAt:   int(e.UpdatedAt),
+			DeletedAt:   int(e.DeletedAt),
+			PageInfo: &Pagination{
+				Page:    int(page),
+				PerPage: int(per_page),
+				Cursor:  i,
+			},
+		})
 	}
 
-	if val, ok := params.Args[FLD_ENTITY_CREATED_AT]; ok && int64(val.(int)) > 0 {
-		intFilter[FLD_ENTITY_CREATED_AT] = int64(val.(int))
-	}
-
-	if val, ok := params.Args[FLD_ENTITY_UPDATED_AT]; ok && int64(val.(int)) > 0 {
-		intFilter[FLD_ENTITY_UPDATED_AT] = int64(val.(int))
-	}
-
-	if val, ok := params.Args[FLD_ENTITY_DELETED_AT]; ok && int64(val.(int)) > 0 {
-		intFilter[FLD_ENTITY_DELETED_AT] = int64(val.(int))
-	}
-
-	err, _, res = entity.Search(stringFilter, intFilter)
-
+	res = newList
 	return
 
 }

@@ -122,11 +122,10 @@ func getNatures(p graphql.ResolveParams) (res interface{}, err error) {
 	for k, v := range p.Args {
 
 		switch k {
+
 		case FLD_TYPE_ID:
 			intFilter[k] = int64(v.(int))
-		case FLD_TYPE_NAME:
-			stringFilter[k] = v.(string)
-		case FLD_TYPE_DESCRIPTION:
+		case FLD_TYPE_NAME, FLD_TYPE_DESCRIPTION:
 			stringFilter[k] = v.(string)
 		}
 	}
